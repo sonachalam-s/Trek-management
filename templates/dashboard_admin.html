@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard – TrekMS{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+  <div>
+    <h1 class="h3 mb-1"><i class="bi bi-shield-lock text-success"></i> Admin Dashboard</h1>
+    <p class="text-muted mb-0 small">Logged in as <strong>{{ current_user.username }}</strong></p>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+    <a href="{{ url_for('admin_add_trek') }}" class="btn btn-trek btn-sm"><i class="bi bi-plus-lg"></i> Add Trek</a>
+    <a href="{{ url_for('admin_bookings') }}" class="btn btn-outline-trek btn-sm"><i class="bi bi-calendar3"></i> Bookings</a>
+    <a href="{{ url_for('admin_users') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-people"></i> Users</a>
+    <a href="{{ url_for('admin_activity') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-activity"></i> Activity</a>
+  </div>
+</div>
+
+<!-- KPI stats -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3 col-lg-2">
+    <div class="stat-card">
+      <div class="fs-4 fw-bold text-success">{{ stats.active_treks }}</div>
+      <div class="text-muted small">Active Treks</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3 col-lg-2">
+    <div class="stat-card">
+      <div class="fs-4 fw-bold">{{ stats.users }}</div>
+      <div class="text-muted small">Users</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3 col-lg-2">
+    <div class="stat-card">
+      <div class="fs-4 fw-bold text-primary">{{ stats.bookings }}</div>
+      <div class="text-muted small">Bookings</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3 col-lg-2">
+    <div class="stat-card">
+      <div class="fs-4 fw-bold text-success">{{ stats.completed }}</div>
+      <div class="text-muted small">Completed</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3 col-lg-2">
+    <div class="stat-card">
+      <div class="fs-4 fw-bold text-secondary">{{ stats.planned }}</div>
+      <div class="text-muted small">Planned</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3 col-lg-2">
+    <div class="stat-card">
+      <div class="fs-4 fw-bold text-warning">{{ stats.activities }}</div>
+      <div class="text-muted small">Activities</div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick admin panels -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <a href="{{ url_for('admin_bookings') }}" class="text-decoration-none">
+      <div class="stat-card text-start px-3">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-calendar3 fs-3 text-success"></i>
+          <div>
+            <div class="fw-semibold">Manage Bookings</div>
+            <div class="text-muted small">Change status · Delete</div>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-3">
+    <a href="{{ url_for('admin_users') }}" class="text-decoration-none">
+      <div class="stat-card text-start px-3">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-people fs-3 text-success"></i>
+          <div>
+            <div class="fw-semibold">Manage Users</div>
+            <div class="text-muted small">Roles · History</div>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-3">
+    <a href="{{ url_for('admin_activity') }}" class="text-decoration-none">
+      <div class="stat-card text-start px-3">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-activity fs-3 text-success"></i>
+          <div>
+            <div class="fw-semibold">Activity Log</div>
+            <div class="text-muted small">System-wide history</div>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-3">
+    <a href="{{ url_for('admin_add_trek') }}" class="text-decoration-none">
+      <div class="stat-card text-start px-3">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-plus-circle fs-3 text-success"></i>
+          <div>
+            <div class="fw-semibold">Add Trek</div>
+            <div class="text-muted small">New trek + map coords</div>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Treks table -->
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header bg-white d-flex justify-content-between">
+        <strong>Treks ({{ stats.treks }})</strong>
+        <a href="{{ url_for('admin_add_trek') }}" class="btn btn-sm btn-trek">Add</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm table-hover mb-0">
+          <thead class="table-light">
+            <tr><th>Name</th><th>Country</th><th>Diff</th><th>Days</th><th>Active</th><th></th></tr>
+          </thead>
+          <tbody>
+            {% for t in treks %}
+            <tr>
+              <td class="fw-semibold">{{ t.name }}</td>
+              <td>{{ t.country }}</td>
+              <td><span class="badge badge-{{ t.difficulty }}">{{ t.difficulty }}</span></td>
+              <td>{{ t.duration_days }}</td>
+              <td>{% if t.is_active %}<span class="text-success">Yes</span>{% else %}<span class="text-danger">No</span>{% endif %}</td>
+              <td class="text-nowrap">
+                <a href="{{ url_for('admin_edit_trek', trek_id=t.id) }}" class="btn btn-sm btn-outline-primary py-0">Edit</a>
+                {% if t.is_active %}
+                <form method="post" action="{{ url_for('admin_delete_trek', trek_id=t.id) }}" class="d-inline"
+                      onsubmit="return confirm('Deactivate?')">
+                  <button class="btn btn-sm btn-outline-warning py-0">Off</button>
+                </form>
+                {% endif %}
+                <form method="post" action="{{ url_for('admin_hard_delete_trek', trek_id=t.id) }}" class="d-inline"
+                      onsubmit="return confirm('PERMANENT delete?')">
+                  <button class="btn btn-sm btn-outline-danger py-0"><i class="bi bi-trash"></i></button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent activity + bookings -->
+  <div class="col-lg-4">
+    <div class="card mb-3">
+      <div class="card-header bg-white d-flex justify-content-between">
+        <strong>Recent Bookings</strong>
+        <a href="{{ url_for('admin_bookings') }}" class="small">All →</a>
+      </div>
+      <ul class="list-group list-group-flush small">
+        {% for b in bookings[:6] %}
+        <li class="list-group-item d-flex justify-content-between">
+          <span><strong>{{ b.username }}</strong> · {{ b.name }}</span>
+          <span class="badge
+            {% if b.status=='planned' %}bg-secondary
+            {% elif b.status=='confirmed' %}bg-primary
+            {% elif b.status=='completed' %}bg-success
+            {% else %}bg-danger{% endif %}">{{ b.status }}</span>
+        </li>
+        {% else %}
+        <li class="list-group-item text-muted">No bookings yet</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-header bg-white d-flex justify-content-between">
+        <strong>Activity</strong>
+        <a href="{{ url_for('admin_activity') }}" class="small">All →</a>
+      </div>
+      <ul class="list-group list-group-flush small">
+        {% for a in recent_activity %}
+        <li class="list-group-item">
+          <span class="badge bg-trek me-1">{{ a.action }}</span>
+          <strong>{{ a.username or '?' }}</strong>
+          <span class="text-muted">{{ (a.details or '')[:35] }}{% if a.details and a.details|length>35 %}…{% endif %}</span>
+        </li>
+        {% else %}
+        <li class="list-group-item text-muted">No activity yet</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

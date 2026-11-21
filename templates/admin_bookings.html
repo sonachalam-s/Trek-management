@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}All Bookings – Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="mb-0"><i class="bi bi-calendar3 text-success"></i> All Bookings</h1>
+  <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary btn-sm">← Dashboard</a>
+</div>
+
+{% if bookings %}
+<div class="table-responsive">
+  <table class="table table-hover align-middle bg-white shadow-sm">
+    <thead class="table-light">
+      <tr>
+        <th>#</th>
+        <th>User</th>
+        <th>Trek</th>
+        <th>Start</th>
+        <th>Status</th>
+        <th>Created</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for b in bookings %}
+      <tr>
+        <td>{{ b.id }}</td>
+        <td>
+          <strong>{{ b.username }}</strong><br>
+          <small class="text-muted">{{ b.email }}</small>
+        </td>
+        <td>
+          {{ b.trek_name }}<br>
+          <small class="text-muted">{{ b.difficulty|capitalize }} · {{ b.duration_days }}d</small>
+        </td>
+        <td>{{ b.start_date or '—' }}</td>
+        <td>
+          <form method="post" action="{{ url_for('admin_update_booking', booking_id=b.id) }}" class="d-inline">
+            <select name="status" class="form-select form-select-sm" style="width:auto;display:inline-block"
+                    onchange="this.form.submit()">
+              <option value="planned" {% if b.status=='planned' %}selected{% endif %}>Planned</option>
+              <option value="confirmed" {% if b.status=='confirmed' %}selected{% endif %}>Confirmed</option>
+              <option value="completed" {% if b.status=='completed' %}selected{% endif %}>Completed</option>
+              <option value="cancelled" {% if b.status=='cancelled' %}selected{% endif %}>Cancelled</option>
+            </select>
+          </form>
+        </td>
+        <td class="small text-muted">{{ b.created_at[:10] if b.created_at else '—' }}</td>
+        <td>
+          <form method="post" action="{{ url_for('admin_delete_booking', booking_id=b.id) }}" class="d-inline"
+                onsubmit="return confirm('Delete this booking permanently?')">
+            <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="alert alert-info">No bookings in the system yet.</div>
+{% endif %}
+{% endblock %}

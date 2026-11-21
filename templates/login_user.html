@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}User Login – TrekMS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5 col-lg-4">
+    <div class="card shadow border-0">
+      <div class="card-header text-center py-4" style="background:linear-gradient(135deg,#0b6e4f,#084c37);color:#fff;border-radius:12px 12px 0 0">
+        <div class="fs-1 mb-1"><i class="bi bi-person-circle"></i></div>
+        <h4 class="mb-0">User Login</h4>
+        <small class="opacity-75">Trekker portal</small>
+      </div>
+      <div class="card-body p-4">
+        <form method="post">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Username or Email</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-person"></i></span>
+              <input type="text" name="username" class="form-control" required autofocus placeholder="trekker">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Password</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-lock"></i></span>
+              <input type="password" name="password" class="form-control" required placeholder="••••••••">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-trek w-100 btn-lg">
+            <i class="bi bi-box-arrow-in-right"></i> Sign In
+          </button>
+        </form>
+        <hr class="my-3">
+        <p class="text-center small mb-2">
+          No account? <a href="{{ url_for('register') }}">Register here</a>
+        </p>
+        <p class="text-center small mb-0">
+          <a href="{{ url_for('admin_login') }}"><i class="bi bi-shield-lock"></i> Admin Login →</a>
+        </p>
+        <div class="mt-3 p-2 rounded bg-light small text-muted text-center">
+          Demo: <code>trekker</code> / <code>trekker123</code>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard – TrekMS{% endblock %}
+
+{% block content %}
+<h1 class="mb-4"><i class="bi bi-shield-lock text-success"></i> Admin Dashboard</h1>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <a href="{{ url_for('admin_bookings') }}" class="text-decoration-none">
+      <div class="stat-card">
+        <div class="fs-3 text-success"><i class="bi bi-calendar3"></i></div>
+        <div class="fw-semibold">All Bookings</div>
+        <div class="text-muted small">Manage every reservation</div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-3">
+    <a href="{{ url_for('admin_users') }}" class="text-decoration-none">
+      <div class="stat-card">
+        <div class="fs-3 text-success"><i class="bi bi-people"></i></div>
+        <div class="fw-semibold">Users</div>
+        <div class="text-muted small">Roles & history</div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-3">
+    <a href="{{ url_for('admin_activity') }}" class="text-decoration-none">
+      <div class="stat-card">
+        <div class="fs-3 text-success"><i class="bi bi-activity"></i></div>
+        <div class="fw-semibold">Activity Log</div>
+        <div class="text-muted small">System-wide history</div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-3">
+    <a href="{{ url_for('admin_add_trek') }}" class="text-decoration-none">
+      <div class="stat-card">
+        <div class="fs-3 text-success"><i class="bi bi-plus-circle"></i></div>
+        <div class="fw-semibold">Add Trek</div>
+        <div class="text-muted small">Create new trek</div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<ul class="nav nav-tabs mb-3" role="tablist">
+  <li class="nav-item">
+    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#treks-tab">Treks ({{ treks|length }})</button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#users-tab">Users ({{ users|length }})</button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#bookings-tab">Recent Bookings</button>
+  </li>
+</ul>
+
+<div class="tab-content">
+  <div class="tab-pane fade show active" id="treks-tab">
+    <div class="mb-2">
+      <a href="{{ url_for('admin_add_trek') }}" class="btn btn-trek btn-sm"><i class="bi bi-plus-lg"></i> Add Trek</a>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-sm table-hover bg-white">
+        <thead>
+          <tr>
+            <th>ID</th><th>Name</th><th>Country</th><th>Diff</th><th>Days</th><th>Active</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in treks %}
+          <tr>
+            <td>{{ t.id }}</td>
+            <td>{{ t.name }}</td>
+            <td>{{ t.country }}</td>
+            <td><span class="badge badge-{{ t.difficulty }}">{{ t.difficulty }}</span></td>
+            <td>{{ t.duration_days }}</td>
+            <td>{% if t.is_active %}<span class="text-success">Yes</span>{% else %}<span class="text-danger">No</span>{% endif %}</td>
+            <td class="text-nowrap">
+              <a href="{{ url_for('admin_edit_trek', trek_id=t.id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+              {% if t.is_active %}
+              <form method="post" action="{{ url_for('admin_delete_trek', trek_id=t.id) }}" class="d-inline"
+                    onsubmit="return confirm('Deactivate this trek?')">
+                <button type="submit" class="btn btn-sm btn-outline-warning">Deactivate</button>
+              </form>
+              {% endif %}
+              <form method="post" action="{{ url_for('admin_hard_delete_trek', trek_id=t.id) }}" class="d-inline"
+                    onsubmit="return confirm('PERMANENTLY delete this trek and all related data?')">
+                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="tab-pane fade" id="users-tab">
+    <a href="{{ url_for('admin_users') }}" class="btn btn-sm btn-outline-trek mb-2">Full user management →</a>
+    <table class="table table-sm bg-white">
+      <thead><tr><th>ID</th><th>Username</th><th>Email</th><th>Name</th><th>Admin</th><th>Joined</th></tr></thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td>{{ u.id }}</td>
+          <td>{{ u.username }}</td>
+          <td>{{ u.email }}</td>
+          <td>{{ u.full_name or '—' }}</td>
+          <td>{% if u.is_admin %}Yes{% else %}No{% endif %}</td>
+          <td>{{ u.created_at[:10] if u.created_at else '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tab-pane fade" id="bookings-tab">
+    <a href="{{ url_for('admin_bookings') }}" class="btn btn-sm btn-outline-trek mb-2">Manage all bookings →</a>
+    <table class="table table-sm bg-white">
+      <thead><tr><th>ID</th><th>User</th><th>Trek</th><th>Start</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for b in bookings %}
+        <tr>
+          <td>{{ b.id }}</td>
+          <td>{{ b.username }}</td>
+          <td>{{ b.name }}</td>
+          <td>{{ b.start_date or '—' }}</td>
+          <td>{{ b.status }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

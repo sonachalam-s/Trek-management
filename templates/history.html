@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}{% if is_admin_view %}User History – {{ viewed_user.username }}{% else %}My History{% endif %} – TrekMS{% endblock %}
+
+{% block content %}
+{% if is_admin_view %}
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{ url_for('admin_users') }}">Users</a></li>
+    <li class="breadcrumb-item active">{{ viewed_user.username }} history</li>
+  </ol>
+</nav>
+<div class="alert alert-info d-flex align-items-center gap-2">
+  <i class="bi bi-shield-lock fs-4"></i>
+  <div>
+    Viewing history for <strong>{{ viewed_user.full_name or viewed_user.username }}</strong>
+    ({{ viewed_user.email }}) — fitness: {{ viewed_user.fitness_level }}
+    {% if viewed_user.is_admin %}<span class="badge bg-danger ms-1">Admin</span>{% endif %}
+  </div>
+</div>
+{% else %}
+<h1 class="mb-4"><i class="bi bi-clock-history text-success"></i> My History</h1>
+{% endif %}
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-2"><div class="stat-card"><div class="fs-4 fw-bold">{{ stats.total }}</div><div class="text-muted small">Total</div></div></div>
+  <div class="col-6 col-md-2"><div class="stat-card"><div class="fs-4 fw-bold text-secondary">{{ stats.planned }}</div><div class="text-muted small">Planned</div></div></div>
+  <div class="col-6 col-md-2"><div class="stat-card"><div class="fs-4 fw-bold text-primary">{{ stats.confirmed }}</div><div class="text-muted small">Confirmed</div></div></div>
+  <div class="col-6 col-md-2"><div class="stat-card"><div class="fs-4 fw-bold text-success">{{ stats.completed }}</div><div class="text-muted small">Completed</div></div></div>
+  <div class="col-6 col-md-2"><div class="stat-card"><div class="fs-4 fw-bold text-danger">{{ stats.cancelled }}</div><div class="text-muted small">Cancelled</div></div></div>
+</div>
+
+<ul class="nav nav-tabs mb-3" role="tablist">
+  <li class="nav-item">
+    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#bookings-tab">
+      Bookings ({{ bookings|length }})
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#activity-tab">
+      Activity Log ({{ activities|length }})
+    </button>
+  </li>
+</ul>
+
+<div class="tab-content">
+  <div class="tab-pane fade show active" id="bookings-tab">
+    {% if bookings %}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle bg-white shadow-sm">
+        <thead class="table-light">
+          <tr>
+            <th>Trek</th>
+            <th>Location</th>
+            <th>Start</th>
+            <th>Status</th>
+            <th>Booked on</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in bookings %}
+          <tr>
+            <td>
+              <strong>{{ b.name }}</strong><br>
+              <small class="text-muted">{{ b.difficulty|capitalize }} · {{ b.duration_days }}d</small>
+            </td>
+            <td>{{ b.location }}{% if b.country %}, {{ b.country }}{% endif %}</td>
+            <td>{{ b.start_date or '—' }}</td>
+            <td>
+              <span class="badge
+                {% if b.status=='planned' %}bg-secondary
+                {% elif b.status=='confirmed' %}bg-primary
+                {% elif b.status=='completed' %}bg-success
+                {% else %}bg-danger{% endif %}">{{ b.status|capitalize }}</span>
+            </td>
+            <td class="small text-muted">{{ b.created_at[:16].replace('T',' ') if b.created_at else '—' }}</td>
+            <td>
+              <a href="{{ url_for('trek_detail', trek_id=b.trek_id) }}" class="btn btn-sm btn-outline-trek">View</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="alert alert-light border">No bookings yet.</div>
+    {% endif %}
+  </div>
+
+  <div class="tab-pane fade" id="activity-tab">
+    {% if activities %}
+    <div class="list-group shadow-sm">
+      {% for a in activities %}
+      <div class="list-group-item">
+        <div class="d-flex justify-content-between">
+          <div>
+            <span class="badge bg-trek me-2">{{ a.action }}</span>
+            <span>{{ a.details or '—' }}</span>
+          </div>
+          <small class="text-muted text-nowrap">{{ a.created_at[:19].replace('T',' ') if a.created_at else '' }}</small>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-light border">No activity recorded yet.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

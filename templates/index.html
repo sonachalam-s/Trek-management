@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Home – Trek Management System{% endblock %}
+
+{% block content %}
+<div class="hero text-center">
+  <h1 class="display-4 fw-bold">Plan Your Next Adventure</h1>
+  <p class="lead mb-4 opacity-90">Discover world-class treks, explore interactive maps, preview photos, and get AI-powered recommendations.</p>
+  <a href="{{ url_for('ai_suggest') }}" class="btn btn-warning btn-lg me-2 shadow">
+    <i class="bi bi-robot"></i> AI Best Suggestion
+  </a>
+  <a href="{{ url_for('treks_list') }}" class="btn btn-outline-light btn-lg me-2">Browse All Treks</a>
+  {% if not current_user.is_authenticated %}
+  <div class="mt-3">
+    <a href="{{ url_for('login') }}" class="btn btn-light btn-sm me-2"><i class="bi bi-person"></i> User Login</a>
+    <a href="{{ url_for('admin_login') }}" class="btn btn-dark btn-sm"><i class="bi bi-shield-lock"></i> Admin Login</a>
+  </div>
+  {% endif %}
+</div>
+
+<div class="row g-3 mb-5">
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="fs-2 fw-bold text-success">{{ total }}</div>
+      <div class="text-muted small">Treks Available</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="fs-2 fw-bold text-success"><i class="bi bi-map"></i></div>
+      <div class="text-muted small">Interactive Maps</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="fs-2 fw-bold text-success"><i class="bi bi-images"></i></div>
+      <div class="text-muted small">Photo Previews</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="fs-2 fw-bold text-success"><i class="bi bi-robot"></i></div>
+      <div class="text-muted small">AI Recommendations</div>
+    </div>
+  </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="h4 mb-0">Featured Treks</h2>
+  <a href="{{ url_for('treks_list') }}" class="btn btn-sm btn-outline-trek">View all →</a>
+</div>
+<div class="row g-4">
+  {% for trek in featured %}
+  <div class="col-md-6 col-lg-4">
+    <div class="card trek-card">
+      <img src="{{ trek.image_url or 'https://via.placeholder.com/400x200?text=Trek' }}" class="card-img-top" alt="{{ trek.name }}">
+      <div class="card-body d-flex flex-column">
+        <h5 class="card-title">{{ trek.name }}</h5>
+        <p class="card-text text-muted small mb-1">
+          <i class="bi bi-geo-alt"></i> {{ trek.location }}
+        </p>
+        <div class="mb-2">
+          <span class="badge badge-{{ trek.difficulty }}">{{ trek.difficulty|capitalize }}</span>
+          <span class="badge bg-secondary">{{ trek.duration_days }} days</span>
+          {% if trek.max_elevation_m %}
+          <span class="badge bg-info text-dark">{{ trek.max_elevation_m }} m</span>
+          {% endif %}
+        </div>
+        <p class="card-text flex-grow-1 small text-secondary">{{ trek.description[:100] }}…</p>
+        <a href="{{ url_for('trek_detail', trek_id=trek.id) }}" class="btn btn-trek btn-sm mt-auto">
+          View Details &amp; Map
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

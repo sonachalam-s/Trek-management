@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}{% if trek %}Edit{% else %}Add{% endif %} Trek – Admin{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">{% if trek %}Edit Trek{% else %}Add New Trek{% endif %}</h1>
+
+<form method="post" class="card p-4">
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label">Name *</label>
+      <input type="text" name="name" class="form-control" required value="{{ trek.name if trek else '' }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Location *</label>
+      <input type="text" name="location" class="form-control" required value="{{ trek.location if trek else '' }}">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Country</label>
+      <input type="text" name="country" class="form-control" value="{{ trek.country if trek else '' }}">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Difficulty *</label>
+      <select name="difficulty" class="form-select" required>
+        <option value="easy" {% if trek and trek.difficulty=='easy' %}selected{% endif %}>Easy</option>
+        <option value="moderate" {% if trek and trek.difficulty=='moderate' %}selected{% endif %}>Moderate</option>
+        <option value="hard" {% if not trek or trek.difficulty=='hard' %}selected{% endif %}>Hard</option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Duration (days) *</label>
+      <input type="number" name="duration_days" class="form-control" required min="1"
+             value="{{ trek.duration_days if trek else 5 }}">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Distance (km)</label>
+      <input type="number" step="0.1" name="distance_km" class="form-control"
+             value="{{ trek.distance_km if trek else '' }}">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Max Elevation (m)</label>
+      <input type="number" name="max_elevation_m" class="form-control"
+             value="{{ trek.max_elevation_m if trek else '' }}">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Price (USD)</label>
+      <input type="number" step="0.01" name="price_usd" class="form-control"
+             value="{{ trek.price_usd if trek else '' }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Best Season</label>
+      <input type="text" name="best_season" class="form-control"
+             value="{{ trek.best_season if trek else '' }}" placeholder="e.g. March-May, Sep-Nov">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Main Image URL</label>
+      <input type="url" name="image_url" class="form-control"
+             value="{{ trek.image_url if trek else '' }}">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Start Lat</label>
+      <input type="number" step="any" name="lat" class="form-control"
+             value="{{ trek.lat if trek else '' }}">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Start Lng</label>
+      <input type="number" step="any" name="lng" class="form-control"
+             value="{{ trek.lng if trek else '' }}">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">End Lat</label>
+      <input type="number" step="any" name="end_lat" class="form-control"
+             value="{{ trek.end_lat if trek else '' }}">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">End Lng</label>
+      <input type="number" step="any" name="end_lng" class="form-control"
+             value="{{ trek.end_lng if trek else '' }}">
+    </div>
+    <div class="col-12">
+      <label class="form-label">Description</label>
+      <textarea name="description" class="form-control" rows="3">{{ trek.description if trek else '' }}</textarea>
+    </div>
+    <div class="col-12">
+      <label class="form-label">Highlights</label>
+      <textarea name="highlights" class="form-control" rows="2">{{ trek.highlights if trek else '' }}</textarea>
+    </div>
+    {% if trek %}
+    <div class="col-12">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="is_active" id="is_active"
+               {% if trek.is_active %}checked{% endif %}>
+        <label class="form-check-label" for="is_active">Active</label>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  <div class="mt-4">
+    <button type="submit" class="btn btn-trek">Save</button>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+  </div>
+</form>
+{% endblock %}

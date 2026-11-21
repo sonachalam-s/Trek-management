@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Admin Login – TrekMS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5 col-lg-4">
+    <div class="card shadow border-0">
+      <div class="card-header text-center py-4" style="background:linear-gradient(135deg,#1e293b,#0f172a);color:#fff;border-radius:12px 12px 0 0">
+        <div class="fs-1 mb-1"><i class="bi bi-shield-lock"></i></div>
+        <h4 class="mb-0">Admin Login</h4>
+        <small class="opacity-75">Administrator portal</small>
+      </div>
+      <div class="card-body p-4">
+        <form method="post">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Admin Username</label>
+            <div class="input-group">
+              <span class="input-group-text bg-dark text-white border-dark"><i class="bi bi-person-badge"></i></span>
+              <input type="text" name="username" class="form-control" required autofocus placeholder="admin">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Password</label>
+            <div class="input-group">
+              <span class="input-group-text bg-dark text-white border-dark"><i class="bi bi-key"></i></span>
+              <input type="password" name="password" class="form-control" required placeholder="••••••••">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-dark w-100 btn-lg">
+            <i class="bi bi-shield-check"></i> Admin Sign In
+          </button>
+        </form>
+        <hr class="my-3">
+        <p class="text-center small mb-0">
+          <a href="{{ url_for('login') }}"><i class="bi bi-person"></i> ← User Login</a>
+        </p>
+        <div class="mt-3 p-2 rounded bg-light small text-muted text-center">
+          Demo: <code>admin</code> / <code>admin123</code>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
